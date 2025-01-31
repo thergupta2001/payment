@@ -1,0 +1,28 @@
+{
+  "name": "microservices",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:auth": "rm -rf ./dist && tsc -b services/auth",
+    "dev:auth": "ts-node services/auth/src/index.ts",
+    "start:auth": "node -r tsconfig-paths/register dist/services/auth/src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.12.0",
+    "typescript": "^5.7.3"
+  }
+}

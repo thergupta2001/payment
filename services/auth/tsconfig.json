@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/services/auth/src",
+    "rootDir": "./src",
+    "rootDirs": ["./src", "../../libs"]
+  },
+  "include": ["src/**/*"],
+  "references": [{ "path": "../../libs/common" }]
+}
