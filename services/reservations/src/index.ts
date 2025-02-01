@@ -19,4 +19,4 @@ const app: Express = express();
 
 connectDB(process.env.MONGODB_URI!);
 
-app.listen(3000);
+app.listen(3001);

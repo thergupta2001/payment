@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf ./dist && tsc -b services/auth services/reservations",
     "build:auth": "rm -rf ./dist && tsc -b services/auth",
     "dev:auth": "ts-node services/auth/src/index.ts",
-    "start:auth": "node -r tsconfig-paths/register dist/services/auth/src/index.js"
+    "start:auth": "node -r tsconfig-paths/register dist/services/auth/src/index.js",
+    "build:reservations": "rm -rf ./dist && tsc -b services/reservations",
+    "dev:reservations": "ts-node services/reservations/src/index.ts",
+    "start:reservations": "node -r tsconfig-paths/register dist/services/reservations/src/index.js"
   },
   "keywords": [],
   "author": "",

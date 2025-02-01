@@ -20,5 +20,5 @@
     "require": ["tsconfig-paths/register"],
   },
   "exclude": ["node_modules", "services/*/dist", "libs/*/dist"],
-  "references": [{ "path": "./libs/common" }, { "path": "./services/auth" }]
+  "references": [{ "path": "./libs/common" }, { "path": "./services/auth" }, { "path": "./services/reservations" }]
 }
