@@ -6,11 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf ./dist && tsc -b services/auth services/reservations",
-    "build:auth": "rm -rf ./dist && tsc -b services/auth",
-    "dev:auth": "ts-node services/auth/src/index.ts",
+    "build:auth": "tsc -b services/auth",
+    "build:reservations": "tsc -b services/reservations",
+    "dev:auth": "nodemon --exec ts-node services/auth/src/index.ts",
+    "dev:reservations": "nodemon --exec ts-node services/reservations/src/index.ts",
     "start:auth": "node -r tsconfig-paths/register dist/services/auth/src/index.js",
-    "build:reservations": "rm -rf ./dist && tsc -b services/reservations",
-    "dev:reservations": "ts-node services/reservations/src/index.ts",
     "start:reservations": "node -r tsconfig-paths/register dist/services/reservations/src/index.js"
   },
   "keywords": [],
@@ -21,6 +21,7 @@
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "mongoose": "^8.9.5",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0"
   },
