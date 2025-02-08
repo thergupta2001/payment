@@ -1,2 +1,2 @@
 export * from './connectDB';
-export * from './tsconfig.register';
+export * from './abstract.crud';
