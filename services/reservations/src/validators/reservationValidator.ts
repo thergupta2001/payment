@@ -41,7 +41,6 @@ export const validateReservation: RequestHandler[] = [
     .withMessage("Status must be 'booked', 'cancelled', or 'completed'."),
 
   (req: Request, res: Response, next: NextFunction) => {
-    console.log("Request body:", req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
