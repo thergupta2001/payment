@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IReservation extends Document {
-  // userId: mongoose.Types.ObjectId;
-  // invoiceId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  invoiceId: mongoose.Types.ObjectId;
   startDate: Date;
   endDate: Date;
   status: "booked" | "cancelled" | "completed";
@@ -10,6 +10,15 @@ interface IReservation extends Document {
 
 const reservationSchema = new Schema<IReservation>(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    invoiceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+    },
     startDate: {
       type: Date,
       required: true,
@@ -40,9 +49,9 @@ const reservationSchema = new Schema<IReservation>(
   }
 );
 
-reservationSchema.index(
-  { startDate: 1, endDate: 1 },
-);
+reservationSchema.index({ startDate: 1 });
+reservationSchema.index({ endDate: 1 }, { expireAfterSeconds: 0 });
+reservationSchema.index({ userId: 1 }); 
 
 const Reservation = mongoose.model<IReservation>(
   "Reservation",
@@ -50,16 +59,3 @@ const Reservation = mongoose.model<IReservation>(
 );
 
 export default Reservation;
-
-// userId: {
-//   type: Schema.Types.ObjectId,
-//   ref: "User",
-//   required: true,
-//   index: true,
-// },
-// invoiceId: {
-//   type: Schema.Types.ObjectId,
-//   ref: "Invoice",
-//   required: true,
-//   unique: true,
-// },

@@ -1,11 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AuthenticatedRequest } from "./authenticate.types";
 
 const jwtSecret = process.env.JWT_SECRET!;
-
-interface AuthenticatedRequest extends Request {
-  user?: any;
-}
 
 export function authMiddleware(
   req: AuthenticatedRequest,
