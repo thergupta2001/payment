@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import User from "../models/user.schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import redis from "@app/common/utils/redis";
 
 const UserService = new CrudService(User);
 const jwtSecret = process.env.JWT_SECRET;
@@ -28,6 +29,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign({ userId: user._id }, jwtSecret as string, {
       expiresIn: "1h",
     });
+
+    await redis.set(`auth:${user._id}`, token, "EX", 3600);
 
     res.cookie("Authentication", token, {
       httpOnly: true,

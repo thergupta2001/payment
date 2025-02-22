@@ -1,16 +1,23 @@
 services:
-  reservations:
+  transactions:
     build:
       context: .
-      dockerfile: ./services/reservations/Dockerfile
+      dockerfile: ./services/transactions/Dockerfile
       target: development
-    command: npm run dev:reservations
+    command: npm run dev:transactions
     env_file:
       - ./.env
     ports:
-      - 3001:3001
+      - 3002:3002
     volumes:
       - .:/usr/src/app
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   auth:
     build:
@@ -24,6 +31,45 @@ services:
       - 3000:3000
     volumes:
       - .:/usr/src/app
-  
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   mongo:
     image: mongo
+    container_name: mongo
+    ports:
+      - 27017:27017
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+    command: redis-server --save 60 1 --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672  
+      - 15672:15672  
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis_data:

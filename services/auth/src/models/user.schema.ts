@@ -4,7 +4,6 @@ export interface IUser extends Document {
   username: string;
   password: string;
   email: string;
-  reservations: Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>(
@@ -23,7 +22,6 @@ const userSchema = new Schema<IUser>(
       required: true,
       unique: true,
     },
-    reservations: [{ type: Types.ObjectId, ref: "Reservation" }],
   },
   {
     timestamps: true,

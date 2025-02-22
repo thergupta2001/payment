@@ -19,4 +19,9 @@ export class CrudService<T extends Document> {
     const document = await this.model.findOne(filterQuery).lean<T>(true);
     return document || null;
   }
+
+  async findOneById(id: string): Promise<T | null> {
+    const document = await this.model.findById(id).lean<T>(true);
+    return document || null;
+  }
 }

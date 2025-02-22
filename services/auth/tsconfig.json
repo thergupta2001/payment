@@ -5,6 +5,6 @@
     "rootDir": "./src",
     "rootDirs": ["./src", "../../libs"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../libs/common/src/utils/verify.service.ts"],
   "references": [{ "path": "../../libs/common" }]
 }

@@ -1,14 +1,15 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthenticatedRequest } from "./authenticate.types";
+import redis from "./redis";
 
 const jwtSecret = process.env.JWT_SECRET!;
 
-export function authMiddleware(
+export async function authMiddleware(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-): void {
+): Promise<void> {
   try {
     const cookieHeader = req.headers.cookie;
     if (!cookieHeader) {
@@ -27,9 +28,17 @@ export function authMiddleware(
       return;
     }
 
-    const decoded = jwt.verify(token, jwtSecret);
-    req.user = decoded;
+    const decoded = jwt.verify(token, jwtSecret) as { userId: string };
 
+    const storedToken = await redis.get(`auth:${decoded.userId}`);
+    if (!storedToken || storedToken !== token) {
+      res
+        .status(401)
+        .json({ message: "Session expired. Please log in again." });
+      return;
+    }
+
+    req.user = decoded;
     next();
   } catch (error) {
     res.status(401).json({ message: "Unauthorized: Invalid token" });

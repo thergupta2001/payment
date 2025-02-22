@@ -1,11 +1,29 @@
 import mongoose from "mongoose";
 
+let isConnected = false;
+
 export const connectDB = async (connection_string: string) => {
-  try {
-    await mongoose.connect(connection_string);
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-    process.exit(1);
+  if (!isConnected) {
+    try {
+      await mongoose.connect(connection_string);
+      isConnected = true;
+      console.log("MongoDB connected successfully");
+    } catch (error) {
+      console.error("Failed to connect to MongoDB", error);
+      process.exit(1);
+    }
   }
 };
+
+export const disconnectDB = async () => {
+  if (isConnected) {
+    await mongoose.disconnect();
+    isConnected = false;
+    console.log("MongoDB disconnected");
+  }
+};
+
+process.on("SIGINT", async () => {
+  await disconnectDB();
+  process.exit(0);
+});
