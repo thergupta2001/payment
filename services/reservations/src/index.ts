@@ -13,6 +13,7 @@ import express, { Express } from "express";
 import { connectDB } from "@app/common";
 import * as dotenv from "dotenv";
 import router from "./reservations.routes";
+import RabbitMQ from "@app/common/utils/rabbitmq";
 
 dotenv.config();
 
@@ -20,6 +21,9 @@ const app: Express = express();
 app.use(express.json());
 
 connectDB(process.env.MONGODB_URI!);
+(async () => {
+  await RabbitMQ.getInstance();
+})();
 
 app.use('/', router);
 
