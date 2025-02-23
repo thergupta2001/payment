@@ -1,4 +1,4 @@
-import { Model, Document, FilterQuery } from "mongoose";
+import mongoose, { Model, Document, FilterQuery } from "mongoose";
 
 export class CrudService<T extends Document> {
   private model: Model<T>;
@@ -24,4 +24,11 @@ export class CrudService<T extends Document> {
     const document = await this.model.findById(id).lean<T>(true);
     return document || null;
   }
+
+  async deleteOneById(
+    id: mongoose.Types.ObjectId, 
+    session?: mongoose.ClientSession
+  ): Promise<T | null> {
+    return this.model.findByIdAndDelete(id, { session }).lean<T>(true);
+  }  
 }

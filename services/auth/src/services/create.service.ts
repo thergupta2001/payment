@@ -12,6 +12,6 @@ export const createUser = async (req: Request, res: Response) => {
     const user = await UserService.create(req.body);
     res.status(201).json(user);
   } catch (err) {
-    res.status(500).json({ message: "Failed to create reservation", error: err });
+    res.status(500).json({ message: "Failed to create user", error: err });
   }
 };

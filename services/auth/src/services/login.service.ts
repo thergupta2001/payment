@@ -26,6 +26,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    await redis.del(`auth:${user._id}`);
+
     const token = jwt.sign({ userId: user._id }, jwtSecret as string, {
       expiresIn: "1h",
     });

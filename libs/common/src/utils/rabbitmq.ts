@@ -38,13 +38,15 @@ class RabbitMQ {
     }
   }
 
-  public async publish(queue: string, message: object): Promise<void> {
+  public async publish(queue: string, message: object): Promise<boolean> {
     if (!this.channel) throw new Error("RabbitMQ channel is not initialized");
 
     await this.channel.assertQueue(queue, { durable: true });
-    this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
+    const sent = this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
       persistent: true,
     });
+
+    return sent;
   }
 
   public async consume(queue: string, callback: (msg: any) => void): Promise<void> {
