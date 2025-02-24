@@ -1,11 +1,13 @@
 import RabbitMQ from "@app/common/utils/rabbitmq";
 import User from "../models/user.schema";
 import { CrudService } from "@app/common";
-import redis from "@app/common/utils/redis";
+import RedisClient from "@app/common/utils/redis";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
 const UserService = new CrudService(User);
+
+const authRedis = RedisClient.getInstance(0);
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const session = await mongoose.startSession();
@@ -22,7 +24,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
     await UserService.deleteOneById(objectId, session);
 
-    const redisDeleted = await redis.del(`auth:${id}`);
+    const redisDeleted = await authRedis.del(`auth:${id}`);
     if (redisDeleted === 0) {
       throw new Error("Redis deletion failed");
     }

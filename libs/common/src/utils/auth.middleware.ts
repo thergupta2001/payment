@@ -1,9 +1,11 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthenticatedRequest } from "./authenticate.types";
-import redis from "./redis";
+import RedisClient from "./redis";
 
 const jwtSecret = process.env.JWT_SECRET!;
+
+const authRedis = RedisClient.getInstance(0);
 
 export async function authMiddleware(
   req: AuthenticatedRequest,
@@ -30,7 +32,7 @@ export async function authMiddleware(
 
     const decoded = jwt.verify(token, jwtSecret) as { userId: string };
 
-    const storedToken = await redis.get(`auth:${decoded.userId}`);
+    const storedToken = await authRedis.get(`auth:${decoded.userId}`);
     if (!storedToken || storedToken !== token) {
       res
         .status(401)

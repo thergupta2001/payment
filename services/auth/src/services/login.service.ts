@@ -3,10 +3,12 @@ import { Request, Response } from "express";
 import User from "../models/user.schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import redis from "@app/common/utils/redis";
+import RedisClient from "@app/common/utils/redis";
 
 const UserService = new CrudService(User);
 const jwtSecret = process.env.JWT_SECRET;
+
+const authRedis = RedisClient.getInstance(0);
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -26,20 +28,20 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    await redis.del(`auth:${user._id}`);
+    await authRedis.del(`auth:${user._id}`);
 
     const token = jwt.sign({ userId: user._id }, jwtSecret as string, {
       expiresIn: "1h",
     });
 
-    await redis.set(`auth:${user._id}`, token, "EX", 3600);
+    await authRedis.set(`auth:${user._id}`, token, "EX", 3600);
 
     res.cookie("Authentication", token, {
       httpOnly: true,
       path: "/",
     });
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error: error });
   }

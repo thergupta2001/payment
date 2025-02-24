@@ -1,11 +1,11 @@
 import { Document, model, Schema, Types } from "mongoose";
 
 export interface ITransaction extends Document {
-  userId: Types.ObjectId;
-  stripePaymentId: string;
+  senderId: Types.ObjectId;
+  receiverId: Types.ObjectId;
   amount: number;
   currency: string;
-  status: "pending" | "completed" | "failed" | "refunded";
+  status: "pending" | "completed" | "failed";
   createdAt: Date;
   updatedAt: Date;
   metadata?: Record<string, any>;
@@ -13,14 +13,14 @@ export interface ITransaction extends Document {
 
 const transactionSchema = new Schema<ITransaction>(
   {
-    userId: {
+    senderId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    stripePaymentId: {
-      type: String,
-      unique: true,
+    receiverId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     amount: {
@@ -34,7 +34,7 @@ const transactionSchema = new Schema<ITransaction>(
     },
     status: {
       type: String,
-      enum: ["pending", "completed", "failed", "refunded"],
+      enum: ["pending", "completed", "failed"],
       default: "pending",
     },
     metadata: {
@@ -47,8 +47,8 @@ const transactionSchema = new Schema<ITransaction>(
   }
 );
 
-transactionSchema.index({ stripePaymentId: 1 }, { unique: true }); 
-transactionSchema.index({ userId: 1, createdAt: -1 });
+transactionSchema.index({ senderId: 1, createdAt: -1 });
+transactionSchema.index({ receiverId: 1, createdAt: -1 });
 
 const Transaction = model<ITransaction>("Transaction", transactionSchema);
 export default Transaction;
