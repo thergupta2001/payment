@@ -4,7 +4,6 @@ export interface ITransaction extends Document {
   senderId: Types.ObjectId;
   receiverId: Types.ObjectId;
   amount: number;
-  currency: string;
   status: "pending" | "completed" | "failed";
   createdAt: Date;
   updatedAt: Date;
@@ -26,11 +25,6 @@ const transactionSchema = new Schema<ITransaction>(
     amount: {
       type: Number,
       required: true,
-    },
-    currency: {
-      type: String,
-      required: true,
-      default: "INR"
     },
     status: {
       type: String,

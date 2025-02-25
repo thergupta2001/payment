@@ -11,7 +11,7 @@ export class CrudService<T extends Document> {
   }
 
   async create(
-    document: Omit<T & { _id?: string }, "_id">,
+    document: Partial<T>,
     options?: { session?: mongoose.ClientSession }
   ): Promise<T> {
     const createdDocument = new this.model(document);
