@@ -13,6 +13,7 @@ import express, { Express } from "express";
 import * as dotenv from "dotenv";
 import RabbitMQ from "@app/common/utils/rabbitmq";
 import { connectDB } from "@app/common";
+import router from "./routes";
 
 dotenv.config();
 
@@ -22,5 +23,7 @@ app.use(express.json());
   await connectDB(process.env.MONGODB_URI!);
   await RabbitMQ.getInstance();
 })();
+
+app.use("/transactions", router);
 
 app.listen(3002);

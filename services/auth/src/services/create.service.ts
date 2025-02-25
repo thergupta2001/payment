@@ -18,16 +18,17 @@ export const createUser = async (req: Request, res: Response) => {
 
     const userId = user._id.toString();
     const email = user.email;
-    const defaultBalance = 2000;
+    const balance = 2000;
 
     const redisPipeline = transactionRedis.multi();
-    redisPipeline.set(`user:${userId}`, JSON.stringify({ userId, email, defaultBalance })); 
+    redisPipeline.set(`user:${userId}`, JSON.stringify({ userId, email }));
+    redisPipeline.set(`user:${userId}:balance`, balance.toString());
 
     await redisPipeline.exec();
 
     await session.commitTransaction();
     session.endSession();
-    
+
     res.status(201).json(user);
   } catch (err) {
     await session.abortTransaction();

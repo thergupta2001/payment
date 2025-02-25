@@ -76,7 +76,13 @@ export const processTransaction = async (
     const rabbitmq = await RabbitMQ.getInstance();
     await rabbitmq.publish(
       "transactions",
-      { transactionId: transaction._id }
+      {
+        transactionId: transaction._id,
+        senderId: senderObjectId.toString(),
+        receiverId: receiverObjectId.toString(),
+        amount,
+        status: "pending",
+      }
     );
 
     await session.commitTransaction();
