@@ -8,10 +8,13 @@
     "build": "rm -rf ./dist && tsc -b services/auth services/transactions",
     "build:auth": "tsc -b services/auth",
     "build:transactions": "tsc -b services/transactions",
+    "build:balance": "tsc -b services/balance",
     "dev:auth": "nodemon --exec ts-node services/auth/src/index.ts",
     "dev:transactions": "nodemon --exec ts-node services/transactions/src/index.ts",
+    "dev:balance": "nodemon --exec ts-node services/balance/src/index.ts",
     "start:auth": "node -r tsconfig-paths/register dist/services/auth/src/index.js",
-    "start:transactions": "node -r tsconfig-paths/register dist/services/transactions/src/index.js"
+    "start:transactions": "node -r tsconfig-paths/register dist/services/transactions/src/index.js",
+    "start:balance": "node -r tsconfig-paths/register dist/services/balance/src/index.js"
   },
   "keywords": [],
   "author": "",

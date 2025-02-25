@@ -1,11 +1,10 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-      "outDir": "../../dist/services/transactions/src",
-      "rootDir": "./src",
-      "rootDirs": ["./src", "../../libs"]
-    },
-    "include": ["src/**/*"],
-    "references": [{ "path": "../../libs/common" }]
-  }
-  
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/services/transactions/src",
+    "rootDir": "./src",
+    "rootDirs": ["./src", "../../libs"]
+  },
+  "include": ["src/**/*"],
+  "references": [{ "path": "../../libs/common" }]
+}

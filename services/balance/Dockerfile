@@ -4,7 +4,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm install --save-dev nodemon
-CMD ["npm", "run", "dev:reservations"] 
+CMD ["npm", "run", "dev:balance"] 
 
 FROM node:alpine AS production
 ARG NODE_ENV=production
@@ -13,5 +13,4 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install --only=production
 COPY --from=development /usr/src/app/dist ./dist
-CMD ["node", "-r", "tsconfig-paths/register", "dist/services/reservations/src/index.js"]
-
+CMD ["node", "-r", "tsconfig-paths/register", "dist/services/balance/src/index.js"]

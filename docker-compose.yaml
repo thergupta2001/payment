@@ -35,6 +35,24 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  balance:
+    build:
+      context: .
+      dockerfile: ./services/balance/Dockerfile
+      target: development
+    command: npm run dev:balance
+    env_file:
+      - ./.env
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
   redis:
     image: redis:latest
     container_name: redis

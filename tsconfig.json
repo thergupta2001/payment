@@ -23,6 +23,7 @@
   "references": [
     { "path": "./libs/common" },
     { "path": "./services/auth" },
-    { "path": "./services/transactions" }
+    { "path": "./services/transactions" },
+    { "path": "./services/balance" }
   ]
 }
