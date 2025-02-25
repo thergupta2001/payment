@@ -12,7 +12,7 @@ export const processTransaction = async(req: Request, res: Response, next: NextF
             throw new Error("Sender and receiver cannot be the same");
         }
 
-
+        
     } catch (error) {
         
     }

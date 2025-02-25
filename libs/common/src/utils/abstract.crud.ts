@@ -10,9 +10,12 @@ export class CrudService<T extends Document> {
     this.model = model;
   }
 
-  async create(document: Omit<T & { _id?: string }, "_id">): Promise<T> {
+  async create(
+    document: Omit<T & { _id?: string }, "_id">,
+    options?: { session?: mongoose.ClientSession }
+  ): Promise<T> {
     const createdDocument = new this.model(document);
-    return await createdDocument.save();
+    return await createdDocument.save({ session: options?.session });
   }
 
   async findOne(filterQuery: FilterQuery<T>): Promise<T | null> {
@@ -26,9 +29,9 @@ export class CrudService<T extends Document> {
   }
 
   async deleteOneById(
-    id: mongoose.Types.ObjectId, 
+    id: mongoose.Types.ObjectId,
     session?: mongoose.ClientSession
   ): Promise<T | null> {
     return this.model.findByIdAndDelete(id, { session }).lean<T>(true);
-  }  
+  }
 }

@@ -9,6 +9,7 @@ const UserService = new CrudService(User);
 const jwtSecret = process.env.JWT_SECRET;
 
 const authRedis = RedisClient.getInstance(0);
+const transactionRedis = RedisClient.getInstance(1);
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -35,6 +36,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     });
 
     await authRedis.set(`auth:${user._id}`, token, "EX", 3600);
+
+    const exists = await transactionRedis.exists(`user:${user._id}`);
+
+    const userId = user._id;
+
+    if (!exists) {
+      console.log(`Creating new Redis entry for user: ${user._id}`);
+      await transactionRedis.set(
+        `user:${user._id}`,
+        JSON.stringify({ userId, email }),
+      );
+    }
 
     res.cookie("Authentication", token, {
       httpOnly: true,
