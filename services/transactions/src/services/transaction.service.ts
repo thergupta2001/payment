@@ -23,29 +23,11 @@ export const processTransaction = async (
       throw new Error("Sender and receiver cannot be the same");
     }
 
-    const senderExists = await transactionRedis.exists(`user:${senderId}`);
-    const receiverExists = await transactionRedis.exists(`user:${receiverId}`);
+    const senderData = await transactionRedis.get(`user:${senderId}:balance`);
+    const receiverData = await transactionRedis.get(`user:${receiverId}:balance`);
 
-    if (!senderExists || !receiverExists) {
-      throw new Error("Sender or receiver does not exist");
-    }
-
-    const senderBalance = await transactionRedis.get(
-      `user:${senderId}:balance`
-    );
-    const receiverBalance = await transactionRedis.get(
-      `user:${receiverId}:balance`
-    );
-
-    if (!senderBalance || !receiverBalance) {
+    if(!senderData || !receiverData) {
       throw new Error("Balance information is missing for one of the users");
-    }
-
-    const senderBalanceNum = parseFloat(senderBalance);
-    const receiverBalanceNum = parseFloat(receiverBalance);
-
-    if (senderBalanceNum < amount) {
-      throw new Error("Insufficient funds");
     }
 
     const senderObjectId = new mongoose.Types.ObjectId(senderId);
@@ -61,34 +43,43 @@ export const processTransaction = async (
       { session }
     );
 
-    const newSenderBalance = senderBalanceNum - amount;
-    await transactionRedis.set(
-      `user:${senderId}:balance`,
-      JSON.stringify({ balance: newSenderBalance })
-    );
-
-    const newReceiverBalance = receiverBalanceNum + amount;
-    await transactionRedis.set(
-      `user:${receiverId}:balance`,
-      JSON.stringify({ balance: newReceiverBalance })
-    );
-
     const rabbitmq = await RabbitMQ.getInstance();
-    await rabbitmq.publish(
-      "transactions",
-      {
-        transactionId: transaction._id,
-        senderId: senderObjectId.toString(),
-        receiverId: receiverObjectId.toString(),
-        amount,
-        status: "pending",
+    await rabbitmq.publish("transaction_created", {
+      transactionId: transaction._id,
+      senderId: senderObjectId,
+      receiverId: receiverObjectId,
+      amount,
+      status: "pending",
+    });
+
+    await rabbitmq.consume("transaction_updated", async (data) => {
+      const { transactionId, status } = data;
+
+      try {
+        const transaction = await transactionService.findOneById(transactionId);
+        if (!transaction) {
+          console.error(`Transaction not found: ${transactionId}`);
+          return;
+        }
+
+        await transactionService.updateOne({ _id: transactionId }, { status });
+
+        console.log(
+          `Transaction ${transactionId} updated to status: ${status}`
+        );
+      } catch (error) {
+        console.error("Failed to update transaction status:", error);
       }
-    );
+    });
 
     await session.commitTransaction();
     session.endSession();
 
-    res.status(201).json({ success: true, transaction });
+    res.status(202).json({
+      success: true,
+      message: "Transaction is being processed",
+      transactionId: transaction._id,
+    });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();

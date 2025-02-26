@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf ./dist && tsc -b services/auth services/transactions",
+    "build": "rm -rf ./dist && tsc -b services/auth services/transactions services/balance",
     "build:auth": "tsc -b services/auth",
     "build:transactions": "tsc -b services/transactions",
     "build:balance": "tsc -b services/balance",

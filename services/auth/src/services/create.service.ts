@@ -4,6 +4,7 @@ import User, { IUser } from "../models/user.schema";
 import bcrypt from "bcryptjs";
 import RedisClient from "@app/common/utils/redis";
 import mongoose from "mongoose";
+import RabbitMQ from "@app/common/utils/rabbitmq";
 
 const UserService = new CrudService<IUser>(User);
 const transactionRedis = RedisClient.getInstance(1);
@@ -17,14 +18,15 @@ export const createUser = async (req: Request, res: Response) => {
     const user = await UserService.create(req.body, { session });
 
     const userId = user._id.toString();
-    const email = user.email;
     const balance = 2000;
 
     const redisPipeline = transactionRedis.multi();
-    redisPipeline.set(`user:${userId}`, JSON.stringify({ userId, email }));
-    redisPipeline.set(`user:${userId}:balance`, balance.toString());
+    redisPipeline.set(`user:${userId}:balance`, JSON.stringify({ userId, balance }));
 
     await redisPipeline.exec();
+
+    const rabbitmq = await RabbitMQ.getInstance();
+    await rabbitmq.publish("user_created", { userId });
 
     await session.commitTransaction();
     session.endSession();

@@ -36,8 +36,9 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
     const transactionExists = await transactionRedis.exists(`user:${id}`);
     if (transactionExists) {
-      const redisDeleted = await transactionRedis.del(`user:${id}`);
-      if (redisDeleted === 0) {
+      const redisDeletedUser = await transactionRedis.del(`user:${id}`);
+      const redisDeletedTransaction = await transactionRedis.del(`user:${id}:balance`);
+      if (redisDeletedUser === 0 || redisDeletedTransaction === 0) {
         console.warn(`Redis key user:${id} not found at deletion`);
       }
     } else {

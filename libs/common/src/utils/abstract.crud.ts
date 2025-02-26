@@ -1,4 +1,4 @@
-import mongoose, { Model, Document, FilterQuery } from "mongoose";
+import mongoose, { Model, Document, FilterQuery, UpdateQuery } from "mongoose";
 
 export class CrudService<T extends Document> {
   private model: Model<T>;
@@ -18,8 +18,15 @@ export class CrudService<T extends Document> {
     return await createdDocument.save({ session: options?.session });
   }
 
-  async findOne(filterQuery: FilterQuery<T>): Promise<T | null> {
-    const document = await this.model.findOne(filterQuery).lean<T>(true);
+  async findOne(
+    filterQuery: FilterQuery<T>,
+    session?: mongoose.ClientSession
+  ): Promise<T | null> {
+    const document = await this.model
+      .findOne(filterQuery)
+      .session(session || null)
+      .lean<T>(true);
+
     return document || null;
   }
 
@@ -33,5 +40,15 @@ export class CrudService<T extends Document> {
     session?: mongoose.ClientSession
   ): Promise<T | null> {
     return this.model.findByIdAndDelete(id, { session }).lean<T>(true);
+  }
+
+  async updateOne(
+    filterQuery: FilterQuery<T>,
+    updateData: UpdateQuery<T>,
+    session?: mongoose.ClientSession
+  ): Promise<T | null> {
+    return this.model
+      .findOneAndUpdate(filterQuery, updateData, { new: true, session })
+      .lean<T>(true);
   }
 }

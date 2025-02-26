@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.post("/create", validateUser, createUser);
 router.post("/login", validateLogin, login);
+// Token verification to be added here
 router.delete("/delete/:id", validateUserId , deleteUser);
 
 export default router;

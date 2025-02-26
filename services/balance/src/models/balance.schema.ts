@@ -1,6 +1,6 @@
 import { Document, model, Schema, Types } from "mongoose";
 
-interface IBalance extends Document {
+export interface IBalance extends Document {
   userId: Types.ObjectId;
   balance: number;
 }
