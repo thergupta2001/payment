@@ -13,7 +13,7 @@ import express, { Express } from "express";
 import * as dotenv from "dotenv";
 import RabbitMQ from "@app/common/utils/rabbitmq";
 import { connectDB } from "@app/common";
-import consumeBalance from "./services/balanceConsumer";
+import consumeBalance from "./messageConsumers/balanceConsumer";
 
 dotenv.config();
 
