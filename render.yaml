@@ -1,0 +1,54 @@
+services:
+  - name: auth
+    type: web
+    repo: https://github.com/thergupta2001/payment
+    region: oregon
+    buildCommand: docker build -t auth-service ./services/auth
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false  
+      - key: REDIS_URL
+        sync: false
+      - key: RABBITMQ_URL
+        sync: false
+
+  - name: transactions
+    type: web
+    repo: https://github.com/thergupta2001/payment
+    region: oregon
+    buildCommand: docker build -t transactions-service ./services/transactions
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3002
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: RABBITMQ_URL
+        sync: false
+
+  - name: balance
+    type: web
+    repo: https://github.com/thergupta2001/payment
+    region: oregon
+    buildCommand: docker build -t balance-service ./services/balance
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: RABBITMQ_URL
+        sync: false
