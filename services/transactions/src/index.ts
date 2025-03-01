@@ -12,7 +12,6 @@ register({
 import express, { Express } from "express";
 import * as dotenv from "dotenv";
 import RabbitMQ from "@app/common/utils/rabbitmq";
-// import { connectDB } from "@app/common";
 import router from "./routes";
 import DatabaseConnection from "@app/common/utils/connectDB";
 
@@ -21,9 +20,7 @@ dotenv.config();
 const app: Express = express();
 app.use(express.json());
 (async () => {
-  // await connectDB(process.env.MONGODB_URI!);
-  const db = DatabaseConnection.getInstance();
-  await db.connect();
+  await DatabaseConnection.getInstance();
   await RabbitMQ.getInstance();
 })();
 

@@ -41,9 +41,10 @@ class DatabaseConnection {
     });
   }
 
-  public static getInstance(): DatabaseConnection {
+  public static async getInstance(): Promise<DatabaseConnection> {
     if (!DatabaseConnection.instance) {
       DatabaseConnection.instance = new DatabaseConnection();
+      await DatabaseConnection.instance.connect();
     }
     return DatabaseConnection.instance;
   }
@@ -53,16 +54,6 @@ class DatabaseConnection {
       console.log("Already connected to the database");
       return;
     }
-    // if (!this.isConnected) {
-    //   try {
-    //     await mongoose.connect(process.env.MONGODB_URI!);
-    //     this.isConnected = true;
-    //     console.log("MongoDB connected successfully");
-    //   } catch (error) {
-    //     console.error("Failed to connect to MongoDB", error);
-    //     throw error;
-    //   }
-    // }
 
     let attempts = 0;
     while (attempts < this.maxRetries) {
