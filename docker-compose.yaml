@@ -11,11 +11,6 @@ services:
       - 3002:3002
     volumes:
       - .:/usr/src/app
-    depends_on:
-      # redis:
-      #   condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
 
   auth:
     build:
@@ -29,11 +24,6 @@ services:
       - 3000:3000
     volumes:
       - .:/usr/src/app
-    depends_on:
-      # redis:
-      #   condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
 
   balance:
     build:
@@ -47,37 +37,3 @@ services:
       - 3001:3001
     volumes:
       - .:/usr/src/app
-    depends_on:
-      # redis:
-      #   condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-
-  # redis:
-  #   image: redis:latest
-  #   container_name: redis
-  #   ports:
-  #     - 6379:6379
-  #   command: redis-server --save 60 1 --appendonly yes
-  #   volumes:
-  #     - redis_data:/data
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 3
-
-  rabbitmq:
-    image: rabbitmq:4.0-management
-    container_name: rabbitmq
-    ports:
-      - 5672:5672  
-      - 15672:15672  
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-volumes:
-  redis_data:
