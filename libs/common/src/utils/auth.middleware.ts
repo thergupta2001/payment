@@ -5,7 +5,7 @@ import RedisClient from "./redis";
 
 const jwtSecret = process.env.JWT_SECRET!;
 
-const authRedis = RedisClient.getInstance(0);
+const redis = RedisClient.getInstance();
 
 export async function authMiddleware(
   req: AuthenticatedRequest,
@@ -32,7 +32,7 @@ export async function authMiddleware(
 
     const decoded = jwt.verify(token, jwtSecret) as { userId: string };
 
-    const storedToken = await authRedis.get(`auth:${decoded.userId}`);
+    const storedToken = await redis.get(`auth:${decoded.userId}`);
     if (!storedToken || storedToken !== token) {
       res
         .status(401)

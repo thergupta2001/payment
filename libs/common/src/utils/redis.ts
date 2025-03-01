@@ -1,59 +1,43 @@
 import Redis from "ioredis";
 
 class RedisClient {
-  private static instances: { [key: number]: Redis } = {};
+  private static instance: Redis | null = null;
   private constructor() {}
 
-  public static getInstance(dbIndex: number = 0): Redis {
-    if (!RedisClient.instances[dbIndex]) {
-      RedisClient.instances[dbIndex] = RedisClient.createRedisInstance(dbIndex);
+  public static getInstance(): Redis {
+    if (!RedisClient.instance) {
+      RedisClient.instance = RedisClient.createRedisInstance();
     }
 
-    return RedisClient.instances[dbIndex];
+    return RedisClient.instance;
   }
 
-  public static createRedisInstance(
-    dbIndex: number,
-    attempt: number = 1
-  ): Redis {
-    const redis = new Redis({
-      host: process.env.REDIS_HOST || "localhost",
-      port: Number(process.env.REDIS_PORT) || 6379,
-      password: process.env.REDIS_PASSWORD || undefined,
-      db: dbIndex,
-      retryStrategy: (times) => Math.min(times * 50, 2000),
-    });
+  public static createRedisInstance(attempt: number = 1): Redis {
+    const redis = new Redis(process.env.REDIS_URL!);    
 
-    redis.on("connect", () =>
-      console.log(`Connected to Redis (DB ${dbIndex})`)
-    );
+    redis.on("connect", () => console.log(`Connected to Redis`));
     redis.on("error", async (err) => {
-      console.error(`Redis error on DB ${dbIndex}:`, err);
+      console.error(`Redis error on DB`, err);
 
       if (attempt <= 3) {
         const delay = Math.min(500 * Math.pow(2, attempt - 1), 10000);
         console.log(
-          `Retrying Redis connection (Attempt ${attempt}/5) in ${delay}ms...`
+          `Retrying Redis connection (Attempt ${attempt}/3) in ${delay}ms...`
         );
 
         await new Promise((resolve) => setTimeout(resolve, delay));
 
-        RedisClient.instances[dbIndex] = RedisClient.createRedisInstance(
-          dbIndex,
-          attempt + 1
-        );
+        RedisClient.instance = RedisClient.createRedisInstance(attempt + 1);
       } else
-        console.error(
-          `Redis connection failed after 3 attempts for DB ${dbIndex}`
-        );
+        console.error(`Redis connection failed after 3 attempts for Redis`);
     });
 
     return redis;
   }
 
   public static async disconnect(): Promise<void> {
-    for (const dbIndex in RedisClient.instances) {
-      const redis = RedisClient.instances[dbIndex];
+    if (RedisClient.instance) {
+      const redis = RedisClient.instance;
       await redis.quit();
     }
     console.log("Disconnected from Redis");

@@ -6,8 +6,7 @@ import { Request, Response, NextFunction } from "express";
 
 const UserService = new CrudService(User);
 
-const authRedis = RedisClient.getInstance(0);
-const transactionRedis = RedisClient.getInstance(1);
+const redis = RedisClient.getInstance();
 
 export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const session = await mongoose.startSession();
@@ -24,9 +23,9 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
     await UserService.deleteOneById(objectId, session);
 
-    const exists = await authRedis.exists(`auth:${id}`);
+    const exists = await redis.exists(`auth:${id}`);
     if (exists) {
-      const redisDeleted = await authRedis.del(`auth:${id}`);
+      const redisDeleted = await redis.del(`auth:${id}`);
       if (redisDeleted === 0) {
         console.warn(`Redis key auth:${id} not found at deletion`);
       }
@@ -34,9 +33,9 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
       console.warn(`Skipping Redis deletion, key auth:${id} does not exist`);
     }
 
-    const transactionExists = await transactionRedis.exists(`user:${id}:balance`);
+    const transactionExists = await redis.exists(`user:${id}:balance`);
     if (transactionExists) {
-      const redisDeletedTransaction = await transactionRedis.del(`user:${id}:balance`);
+      const redisDeletedTransaction = await redis.del(`user:${id}:balance`);
       if (redisDeletedTransaction === 0) {
         console.warn(`Redis key user:${id} not found at deletion`);
       }

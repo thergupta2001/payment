@@ -8,7 +8,7 @@ import RedisClient from "@app/common/utils/redis";
 const UserService = new CrudService(User);
 const jwtSecret = process.env.JWT_SECRET;
 
-const authRedis = RedisClient.getInstance(0);
+const redis = RedisClient.getInstance();
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -28,13 +28,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    await authRedis.del(`auth:${user._id}`);
+    await redis.del(`auth:${user._id}`);
 
     const token = jwt.sign({ userId: user._id }, jwtSecret as string, {
       expiresIn: "1h",
     });
 
-    await authRedis.set(`auth:${user._id}`, token, "EX", 3600);
+    await redis.set(`auth:${user._id}`, token, "EX", 3600);
 
     res.cookie("Authentication", token, {
       httpOnly: true,

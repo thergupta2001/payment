@@ -5,7 +5,7 @@ import RabbitMQ from "@app/common/utils/rabbitmq";
 import { CrudService } from "@app/common";
 import Transaction, { ITransaction } from "../models/transactions.schema";
 
-const transactionRedis = RedisClient.getInstance(1);
+const redis = RedisClient.getInstance();
 const transactionService = new CrudService<ITransaction>(Transaction);
 
 export const processTransaction = async (
@@ -23,8 +23,8 @@ export const processTransaction = async (
       throw new Error("Sender and receiver cannot be the same");
     }
 
-    const senderData = await transactionRedis.get(`user:${senderId}:balance`);
-    const receiverData = await transactionRedis.get(`user:${receiverId}:balance`);
+    const senderData = await redis.get(`user:${senderId}:balance`);
+    const receiverData = await redis.get(`user:${receiverId}:balance`);
 
     if(!senderData || !receiverData) {
       throw new Error("Balance information is missing for one of the users");

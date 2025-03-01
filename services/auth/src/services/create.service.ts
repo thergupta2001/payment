@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import RabbitMQ from "@app/common/utils/rabbitmq";
 
 const UserService = new CrudService<IUser>(User);
-const transactionRedis = RedisClient.getInstance(1);
+const redis = RedisClient.getInstance();
 
 export const createUser = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
@@ -20,7 +20,7 @@ export const createUser = async (req: Request, res: Response) => {
     const userId = user._id.toString();
     const balance = 2000;
 
-    const redisPipeline = transactionRedis.multi();
+    const redisPipeline = redis.multi();
     redisPipeline.set(`user:${userId}:balance`, JSON.stringify({ userId, balance }));
 
     await redisPipeline.exec();
