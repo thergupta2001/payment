@@ -14,13 +14,13 @@ import * as dotenv from "dotenv";
 import RabbitMQ from "@app/common/utils/rabbitmq";
 import consumeBalance from "./messageConsumers/balanceConsumer";
 import DatabaseConnection from "@app/common/utils/connectDB";
+import router from "./routes";
 
 dotenv.config();
 
 const app: Express = express();
 app.use(express.json());
 (async () => {
-  // await connectDB(process.env.MONGODB_URI!);
   await DatabaseConnection.getInstance();
   await RabbitMQ.getInstance();
 })();
@@ -32,5 +32,7 @@ consumeBalance()
   .catch((err) => {
     console.error("Error starting transaction consumer:", err);
   });
+
+app.use("/", router);
 
 app.listen(3001);
