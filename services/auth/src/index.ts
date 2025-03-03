@@ -14,6 +14,7 @@ import * as dotenv from "dotenv";
 import router from "./routes";
 import RabbitMQ from "@app/common/utils/rabbitmq";
 import DatabaseConnection from "@app/common/utils/connectDB";
+import { errorHandler } from "@app/common";
 
 dotenv.config();
 
@@ -26,5 +27,6 @@ app.use(express.json());
 })();
 
 app.use("/auth", router);
+app.use(errorHandler);
 
 app.listen(3000);

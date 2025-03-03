@@ -1,13 +1,13 @@
 import { CrudService } from "@app/common";
 import Balance from "../models/balance.schema";
 import RedisClient from "@app/common/utils/redis";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 
 const BalanceService = new CrudService(Balance);
 const redis = RedisClient.getInstance();
 
-export const getBalance = async (req: Request, res: Response) => {
+export const getBalance = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const cachedBalance = await redis.get(`balance:${id}`);
 
@@ -29,7 +29,7 @@ export const getBalance = async (req: Request, res: Response) => {
 
     res.status(200).json({ balance: balance.balance });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error });
+    next(error);
   }
 
   return;

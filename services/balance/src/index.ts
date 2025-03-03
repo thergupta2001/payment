@@ -15,6 +15,7 @@ import RabbitMQ from "@app/common/utils/rabbitmq";
 import consumeBalance from "./messageConsumers/balanceConsumer";
 import DatabaseConnection from "@app/common/utils/connectDB";
 import router from "./routes";
+import { errorHandler } from "@app/common";
 
 dotenv.config();
 
@@ -34,5 +35,6 @@ consumeBalance()
   });
 
 app.use("/", router);
+app.use(errorHandler);
 
 app.listen(3001);

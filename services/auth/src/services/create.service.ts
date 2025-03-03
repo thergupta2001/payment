@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { CrudService } from "@app/common";
 import User, { IUser } from "../models/user.schema";
 import bcrypt from "bcryptjs";
@@ -9,7 +9,7 @@ import RabbitMQ from "@app/common/utils/rabbitmq";
 const UserService = new CrudService<IUser>(User);
 const redis = RedisClient.getInstance();
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -35,6 +35,6 @@ export const createUser = async (req: Request, res: Response) => {
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
-    res.status(500).json({ message: "Failed to create user", error: err });
+    next(err);
   }
 };

@@ -1,5 +1,5 @@
 import { CrudService } from "@app/common";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import User from "../models/user.schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -10,7 +10,7 @@ const jwtSecret = process.env.JWT_SECRET;
 
 const redis = RedisClient.getInstance();
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { email, password } = req.body;
     const user = await UserService.findOne({ email });
@@ -43,6 +43,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error });
+    next(error);
   }
 };
